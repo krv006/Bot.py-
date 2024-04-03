@@ -1,6 +1,7 @@
 import telebot
 import requests
-from telebot import types 
+from telebot import types
+from telegram import ReplyKeyboardMarkup, KeyboardButton
 
 # Initialize your bot with the Telegram token
 bot = telebot.TeleBot("7199941527:AAH-MfUWCY7Rb3nZBC5oGhaNX1tjzuSrouE")
@@ -18,8 +19,17 @@ def send_welcome(message):
 def send_categories(message):
     categories_data = requests.get(API_BASE_URL + 'categories/').json()
     categories_list = [category['name'] for category in categories_data]
-    categories_string = '\n'.join(categories_list)
-    bot.reply_to(message, f'Available categories:\n{categories_string}')
+    # categories_string = '\n'.join(categories_list)
+    # bot.reply_to(message, f'Available categories:\n{categories_string}')
+    buttons = []
+    for category in categories_list:
+        button = KeyboardButton(category)
+        buttons.append(button)
+
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(*buttons)
+    bot.reply_to(message, 'Choose a category:', reply_markup=keyboard)
+
 
 
 @bot.message_handler(commands=['rv'])
